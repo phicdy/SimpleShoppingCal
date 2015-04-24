@@ -1,9 +1,14 @@
 package com.phicdy.simpleshoppingcalc;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 
 import java.util.ArrayList;
@@ -31,12 +36,39 @@ public class CalcWearActivity extends Activity {
 
     private void initView () {
         gvCalc = (GridView) stub.findViewById(R.id.gv_calc);
-        ArrayList<String> list = new ArrayList<String>();
+        gvCalc.setAdapter(new CalcAdapter(getApplicationContext(), R.layout.item_calc_gridview, calcContents));
+    }
 
-        list.addAll(calcContents);
+    private class ViewHolder {
+        Button btnCalc;
+    }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getApplicationContext(), android.R.layout.simple_list_item_1, list);
-        gvCalc.setAdapter(adapter);
+    private class CalcAdapter extends ArrayAdapter<String> {
+
+        private Context context;
+        private int resource;
+
+        public CalcAdapter(Context context, int resource, List<String> objects) {
+            super(context, resource, objects);
+            this.context = context;
+            this.resource = resource;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(context).inflate(resource, parent, false);
+                holder = new ViewHolder();
+                holder.btnCalc = (Button)convertView.findViewById(R.id.btn_calc_button);
+                convertView.setTag(holder);
+            }else {
+                holder = (ViewHolder)convertView.getTag();
+            }
+
+            holder.btnCalc.setText(getItem(position));
+
+            return convertView;
+        }
     }
 }
